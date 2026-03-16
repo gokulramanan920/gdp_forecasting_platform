@@ -2,16 +2,17 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(
     DATABASE_URL,
-    echo=True,  # Shows SQL queries in console (helpful for debugging)
+    echo=False,  # Shows SQL queries in console (helpful for debugging)
     pool_pre_ping=True  # Verifies connections before using
 )
 

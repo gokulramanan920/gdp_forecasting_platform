@@ -288,6 +288,10 @@ def persist_model_version(
         session.delete(existing)
         session.flush()
 
+    # Deactivate all previously active model versions
+    session.query(ModelVersion).filter_by(is_active=True).update({"is_active": False})
+    session.flush()
+
     mv = ModelVersion(
         version_name        = version_name,
         model_type          = "EnsembleCBXGB",

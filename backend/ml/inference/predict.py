@@ -147,6 +147,16 @@ def persist_predictions(
     Upsert predictions into model_predictions.
     Also inserts one is_baseline=True row per country (last actual year).
     """
+    from db.models.schemas import ModelVersion
+
+    # Delete predictions from all inactive model versions before writing new ones
+    active_version = session.query(ModelVersion).filter_by(is_active=True).first()
+    if active_version:
+        session.query(ModelPrediction).filter(
+            ModelPrediction.model_version != active_version.version_name
+        ).delete()
+        session.flush()
+        
     # Merge CI
     merged = predictions_df.merge(
         ci_df, left_on=["country", "date"], right_on=["country", "year"], how="left"
