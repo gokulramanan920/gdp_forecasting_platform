@@ -20,7 +20,7 @@ lightgbm==4.3.0
 catboost==1.2.2
 
 # Data Sources
-wbdata==1.0.0
+wbdata==0.3.0
 requests==2.31.0
 
 # Visualization (for notebooks/analysis)

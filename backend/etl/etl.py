@@ -15,34 +15,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from db.models.schemas import IndicatorData, Indicator, Country
-from ml.constants import FEATURE_COLS_WITH_COUNTRY, TARGET_COL, TRAIN_START_YEAR, COUNTRY_BATCH_SIZE, INDICATOR_BATCH_SIZE
+from ml.constants import FEATURE_COLS_WITH_COUNTRY, TARGET_COL, TRAIN_START_YEAR, COUNTRY_BATCH_SIZE, INDICATOR_BATCH_SIZE, WBDATA_NAME_TO_CODE
 
 logger = logging.getLogger(__name__)
-
-# wbdata returns full country names in the DataFrame — map back to 2-letter
-# codes that match the country_code primary key in the countries table
-WBDATA_NAME_TO_CODE = {
-    "Australia":          "AU",
-    "Brazil":             "BR",
-    "Canada":             "CA",
-    "China":              "CN",
-    "France":             "FR",
-    "Germany":            "DE",
-    "India":              "IN",
-    "Indonesia":          "ID",
-    "Italy":              "IT",
-    "Japan":              "JP",
-    "Korea, Rep.":        "KR",
-    "Mexico":             "MX",
-    "Netherlands":        "NL",
-    "Russian Federation": "RU",
-    "Saudi Arabia":       "SA",
-    "Spain":              "ES",
-    "Switzerland":        "CH",
-    "Turkiye":            "TR",
-    "United Kingdom":     "GB",
-    "United States":      "US",
-}
 
 # ── Helpers: load from DB ─────────────────────────────────────────────────────
 

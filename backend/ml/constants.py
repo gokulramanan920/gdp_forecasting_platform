@@ -153,3 +153,28 @@ CI_MIN_SAMPLES    = 5      # minimum error samples required
 
 COUNTRY_BATCH_SIZE   = 5
 INDICATOR_BATCH_SIZE = 5
+
+# wbdata returns full country names in the DataFrame — map back to 2-letter
+# codes that match the country_code primary key in the countries table
+WBDATA_NAME_TO_CODE = {
+    "Australia":          "AU",
+    "Brazil":             "BR",
+    "Canada":             "CA",
+    "China":              "CN",
+    "France":             "FR",
+    "Germany":            "DE",
+    "India":              "IN",
+    "Indonesia":          "ID",
+    "Italy":              "IT",
+    "Japan":              "JP",
+    "Korea, Rep.":        "KR",
+    "Mexico":             "MX",
+    "Netherlands":        "NL",
+    "Russian Federation": "RU",
+    "Saudi Arabia":       "SA",
+    "Spain":              "ES",
+    "Switzerland":        "CH",
+    "Turkiye":            "TR",
+    "United Kingdom":     "GB",
+    "United States":      "US",
+}
