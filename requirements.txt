@@ -23,9 +23,14 @@ catboost==1.2.2
 wbdata==0.3.0
 requests==2.31.0
 
-# Visualization (for notebooks/analysis)
+# Visualization
 matplotlib==3.8.2
 seaborn==0.13.1
+panel==1.4.5
+statsmodels==0.14.1
+
+# Auth / JWT
+python-jose[cryptography]==3.3.0
 
 # Statistics
 scipy==1.11.4
