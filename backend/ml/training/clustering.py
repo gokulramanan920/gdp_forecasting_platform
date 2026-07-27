@@ -85,6 +85,20 @@ def assign_cohorts_kmeans(
     developed_countries = cluster_df[cluster_df["cluster"] == developed_id]["country"].tolist()
     emerging_countries  = cluster_df[cluster_df["cluster"] == emerging_id]["country"].tolist()
 
+    # Hard floor: any country below this GDP threshold is always emerging,
+    # regardless of where K-Means draws the boundary (prevents China/India
+    # from landing in the developed cluster when their feature vector sits near the boundary).
+    GDP_EMERGING_CEILING = 20_000
+    base_gdp = {
+        row["country"]: row[TARGET_COL]
+        for _, row in df[df["date"] == base_year][["country", TARGET_COL]].iterrows()
+    }
+    misclassified = [c for c in developed_countries if base_gdp.get(c, 0) < GDP_EMERGING_CEILING]
+    if misclassified:
+        logger.warning("K-Means overridden — moving %s to emerging (GDP below $20k)", misclassified)
+        developed_countries = [c for c in developed_countries if c not in misclassified]
+        emerging_countries  = emerging_countries + misclassified
+
     _log_cluster_results(cluster_df, developed_id, emerging_id)
 
     return developed_countries, emerging_countries, {

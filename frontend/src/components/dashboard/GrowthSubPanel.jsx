@@ -1,16 +1,21 @@
 import { useMemo } from 'react'
 import Plot from '../../utils/PlotlyChart'
 import { useDashboardStore } from '../../store/dashboardStore'
-import { computeCAGR, getCountryColor } from '../../utils/chartUtils'
+import { computeCAGR, getCountryColor, computeTopKCodes } from '../../utils/chartUtils'
 
 export default function GrowthSubPanel() {
-  const { historical, selectedCodes, allCountries, cagrPeriod, colorBy } = useDashboardStore()
+  const { historical, predictions, selectedCodes, allCountries, cagrPeriod, colorBy, topK, yearEnd } = useDashboardStore()
+
+  const activeCodes = useMemo(
+    () => computeTopKCodes(selectedCodes, topK, historical, predictions, yearEnd),
+    [selectedCodes, topK, historical, predictions, yearEnd]
+  )
 
   const { data, layout } = useMemo(() => {
     const n = { '3yr': 3, '5yr': 5, '10yr': 10 }[cagrPeriod]
-    const items = selectedCodes
+    const items = activeCodes
       .map(code => {
-        const idx = selectedCodes.indexOf(code)
+        const idx = activeCodes.indexOf(code)
         const cagr = computeCAGR(historical, code, n)
         if (cagr === null) return null
         const meta = allCountries.find(c => c.country_code === code) ?? {}
@@ -46,7 +51,7 @@ export default function GrowthSubPanel() {
     }
 
     return { data: [trace], layout }
-  }, [historical, selectedCodes, allCountries, cagrPeriod, colorBy])
+  }, [historical, activeCodes, allCountries, cagrPeriod, colorBy])
 
   if (!data.length) {
     return (

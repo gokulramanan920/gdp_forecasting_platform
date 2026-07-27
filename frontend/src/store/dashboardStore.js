@@ -24,6 +24,9 @@ export const useDashboardStore = create((set, get) => ({
   showGrowthPanel: false,
   cagrPeriod: '5yr',
 
+  // ── Top K filter ─────────────────────────────────────────────────────────
+  topK: null,   // null = off, 2–10 = show only top K countries by GDP at yearEnd
+
   // ── Data ─────────────────────────────────────────────────────────────────
   historical: [],    // [{country_code, year, value}]
   predictions: [],   // [{country_code, year, value, ci_lower, ci_upper, is_baseline}]

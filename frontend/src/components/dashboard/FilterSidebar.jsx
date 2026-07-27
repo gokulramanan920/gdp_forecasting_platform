@@ -49,6 +49,7 @@ export default function FilterSidebar() {
     showCI, showProjections, showLowess, showRecession,
     colorBy,
     showGrowthPanel, cagrPeriod,
+    topK,
     toggleCountry, setFilter, setGeoFilter,
   } = useDashboardStore()
 
@@ -157,10 +158,33 @@ export default function FilterSidebar() {
           </div>
         </div>
 
+        {/* ── Top K ────────────────────────────────────────────────── */}
+        <SectionLabel>Top K Countries</SectionLabel>
+        <div className="space-y-2">
+          <Toggle
+            label={topK ? `Top ${topK} by GDP at end year` : 'Show All Selected'}
+            value={topK !== null}
+            onChange={on => setFilter('topK', on ? 5 : null)}
+          />
+          {topK !== null && (
+            <div>
+              <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                <span>K = {topK}</span>
+                <span className="text-gray-600">2 – 10</span>
+              </div>
+              <input
+                type="range" min={2} max={10} step={1} value={topK}
+                onChange={e => setFilter('topK', +e.target.value)}
+                className="w-full h-1 accent-[#00d4ff]"
+              />
+            </div>
+          )}
+        </div>
+
         {/* ── Chart Options ─────────────────────────────────────────── */}
         <SectionLabel>Chart Options</SectionLabel>
         <div className="space-y-1.5">
-          <Toggle label="80% CI Band" value={showCI} onChange={v => setFilter('showCI', v)} />
+          <Toggle label="90% CI Band" value={showCI} onChange={v => setFilter('showCI', v)} />
           <Toggle label="Show Projections" value={showProjections} onChange={v => setFilter('showProjections', v)} />
           <Toggle label="LOWESS Trend" value={showLowess} onChange={v => setFilter('showLowess', v)} />
           <Toggle label="YoY Growth Colors" value={showRecession} onChange={v => setFilter('showRecession', v)} />

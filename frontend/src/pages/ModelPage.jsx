@@ -41,7 +41,7 @@ export default function ModelPage() {
               ['Training window', '1991 – 2022 (expanding CV folds)'],
               ['Holdout', '2023 – 2025 (3-year out-of-sample)'],
               ['Clustering', 'K-Means (k=2): developed / emerging cohorts'],
-              ['Confidence intervals', '80% CI from 10-year empirical error distribution'],
+              ['Confidence intervals', '90% CI from 10-year empirical error distribution'],
               ['Retraining trigger', 'New World Bank GDP data (annual)'],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between gap-4 border-b border-white/5 pb-2">

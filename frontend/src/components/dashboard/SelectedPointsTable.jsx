@@ -26,9 +26,10 @@ export default function SelectedPointsTable() {
   }, [historical, predictions])
 
   const getCAGR3yr = (pt) => {
-    const priorValue = gdpLookup[`${pt.country_code}:${pt.year - 3}`]
-    if (!priorValue || priorValue <= 0 || !pt.value || pt.value <= 0) return null
-    return (Math.pow(pt.value / priorValue, 1 / 3) - 1) * 100
+    const currentValue = gdpLookup[`${pt.country_code}:${pt.year}`]
+    const priorValue   = gdpLookup[`${pt.country_code}:${pt.year - 3}`]
+    if (!currentValue || currentValue <= 0 || !priorValue || priorValue <= 0) return null
+    return (Math.pow(currentValue / priorValue, 1 / 3) - 1) * 100
   }
 
   useEffect(() => {

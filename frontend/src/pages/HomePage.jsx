@@ -78,7 +78,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[48rem] mx-auto">
           <FeatureCard
             title="GDP Trajectory Dashboard"
-            desc="Interactive Plotly charts with historical data and 4-year ML projections (80% CI). Use the lasso tool to select specific points and surface a detailed datatable."
+            desc="Interactive Plotly charts with historical data and 4-year ML projections (90% CI). Use the lasso tool to select specific points and surface a detailed datatable."
           />
           <FeatureCard
             title="Ensemble ML Model"

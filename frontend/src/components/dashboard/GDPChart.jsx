@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import Plot from '../../utils/PlotlyChart'
 import { useDashboardStore } from '../../store/dashboardStore'
-import { computeLowess, hexToRgba, getCountryColor, yoySegmentColor } from '../../utils/chartUtils'
+import { computeLowess, hexToRgba, getCountryColor, yoySegmentColor, computeTopKCodes, REGION_COLORS } from '../../utils/chartUtils'
 
 export default function GDPChart() {
   const {
@@ -10,11 +10,16 @@ export default function GDPChart() {
     yearStart, yearEnd,
     normalize1991,
     showCI, showProjections, showLowess, showRecession,
-    colorBy, loading,
+    colorBy, loading, topK,
     selectedPoints, setFilter,
   } = useDashboardStore()
 
   const clearSelection = () => setFilter('selectedPoints', [])
+
+  const activeCodes = useMemo(
+    () => computeTopKCodes(selectedCodes, topK, historical, predictions, yearEnd),
+    [selectedCodes, topK, historical, predictions, yearEnd]
+  )
 
   const { traces, layout } = useMemo(() => {
     if (!historical.length && !predictions.length) {
@@ -28,7 +33,7 @@ export default function GDPChart() {
     // ── Normalization (rebase each country to its first historical year = 100) ──
     const baseValues = {}
     if (normalize1991) {
-      for (const code of selectedCodes) {
+      for (const code of activeCodes) {
         const pts = hist.filter(d => d.country_code === code).sort((a, b) => a.year - b.year)
         if (pts.length > 0 && pts[0].value > 0) baseValues[code] = pts[0].value
       }
@@ -52,7 +57,7 @@ export default function GDPChart() {
     const yLabel = normalize1991 ? 'Index' : 'GDP/capita'
     const yFmt = normalize1991 ? '%{y:.1f}' : '$%{y:,.0f}'
 
-    selectedCodes.forEach((code, idx) => {
+    activeCodes.forEach((code, idx) => {
       const meta = allCountries.find(c => c.country_code === code) ?? {}
       const name = meta.country_name ?? code
       const color = getCountryColor(code, allCountries, colorBy, idx)
@@ -126,7 +131,7 @@ export default function GDPChart() {
           })
         }
 
-        // 80% CI band
+        // 90% CI band
         if (showCI) {
           const ciX = [...proj.map(d => d.year), ...proj.map(d => d.year).reverse()]
           const ciY = [...proj.map(d => d.ci_upper ?? d.value), ...proj.map(d => d.ci_lower ?? d.value).reverse()]
@@ -183,10 +188,11 @@ export default function GDPChart() {
       }
     })
 
-    // ── Aggregate LOWESS — one trend line across all selected countries ────
+    // ── Aggregate LOWESS — one trend line across active (top-K) countries ─
     if (showLowess) {
+      const activeHist = hist.filter(d => activeCodes.includes(d.country_code))
       const yearMap = {}
-      for (const d of hist) {
+      for (const d of activeHist) {
         if (!yearMap[d.year]) yearMap[d.year] = { sum: 0, count: 0 }
         yearMap[d.year].sum += d.value
         yearMap[d.year].count++
@@ -267,7 +273,7 @@ export default function GDPChart() {
 
     return { traces, layout }
   }, [
-    historical, predictions, selectedCodes, allCountries,
+    historical, predictions, activeCodes, allCountries,
     yearStart, yearEnd, normalize1991,
     showCI, showProjections, showLowess, showRecession,
     colorBy,
@@ -304,7 +310,7 @@ export default function GDPChart() {
     )
   }
 
-  if (!selectedCodes.length) {
+  if (!activeCodes.length) {
     return (
       <div className="flex items-center justify-center h-[520px] text-gray-600 text-sm">
         Select countries from the sidebar to begin.
@@ -366,6 +372,36 @@ export default function GDPChart() {
           </div>
         </div>
       )}
+      {colorBy !== 'country' && (() => {
+        let swatches = []
+        if (colorBy === 'economy_type') {
+          swatches = [{ label: 'Developed', color: '#00d4ff' }, { label: 'Emerging', color: '#ff6b6b' }]
+        } else if (colorBy === 'continent') {
+          const MAP = {
+            'North America': '#00d4ff', 'Europe': '#51cf66',
+            'Asia': '#ffd43b', 'South America': '#ff6b6b',
+            'Africa': '#ff922b', 'Oceania': '#cc5de8',
+          }
+          const present = new Set(allCountries.map(c => c.continent).filter(Boolean))
+          swatches = Object.entries(MAP).filter(([c]) => present.has(c)).map(([label, color]) => ({ label, color }))
+        } else if (colorBy === 'region') {
+          const present = new Set(allCountries.map(c => c.region).filter(Boolean))
+          swatches = Object.entries(REGION_COLORS).filter(([r]) => present.has(r)).map(([label, color]) => ({ label, color }))
+        }
+        return swatches.length ? (
+          <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-1.5 px-2 flex-wrap">
+            <span className="shrink-0 text-gray-600 capitalize">{colorBy.replace('_', ' ')}:</span>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {swatches.map(({ label, color: swatchColor }) => (
+                <span key={label} className="flex items-center gap-1">
+                  <span className="inline-block w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: swatchColor }} />
+                  <span style={{ fontSize: '9px' }}>{label}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null
+      })()}
     </div>
   )
 }

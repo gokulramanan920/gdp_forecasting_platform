@@ -6,7 +6,7 @@ A full-stack platform that forecasts GDP per capita trajectories for 20 countrie
 
 ## Overview
 
-The platform combines a CatBoost + XGBoost ensemble model with a React/Plotly interactive dashboard, a FastAPI backend, and a PostgreSQL database with TimescaleDB. Users can explore historical GDP per capita, compare ML projections with 80% confidence intervals, and drill into economic indicators for any subset of country-years via a lasso-select datatable.
+The platform combines a CatBoost + XGBoost ensemble model with a React/Plotly interactive dashboard, a FastAPI backend, and a PostgreSQL database with TimescaleDB. Users can explore historical GDP per capita, compare ML projections with 90% confidence intervals, and drill into economic indicators for any subset of country-years via a lasso-select datatable.
 
 ---
 
@@ -67,7 +67,7 @@ gdp_forecasting_platform/
 4. **Train** — 4-fold time-series CV + holdout evaluation (2023–2025)
 5. **Extrapolate** — Mean-reverting feature projection 4 years forward
 6. **Predict** — Ensemble inference blended with cluster baseline
-7. **Store** — Upsert predictions and 80% CIs into PostgreSQL
+7. **Store** — Upsert predictions and 90% CIs into PostgreSQL
 
 ---
 

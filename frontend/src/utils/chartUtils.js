@@ -67,6 +67,36 @@ export function yoySegmentColor(pctChange) {
   }
 }
 
+/**
+ * Returns the top K selected codes ranked by GDP per capita at yearEnd.
+ * Falls back to the full selectedCodes list when topK is null/disabled or
+ * fewer countries are selected than K.
+ */
+export function computeTopKCodes(selectedCodes, topK, historical, predictions, yearEnd) {
+  if (!topK || selectedCodes.length <= topK) return selectedCodes
+
+  const gdpAt = {}
+  for (const d of historical) {
+    if (d.year === yearEnd && selectedCodes.includes(d.country_code)) gdpAt[d.country_code] = d.value
+  }
+  for (const d of predictions) {
+    if (d.year === yearEnd && !d.is_baseline && selectedCodes.includes(d.country_code)) gdpAt[d.country_code] = d.value
+  }
+
+  return [...selectedCodes]
+    .sort((a, b) => (gdpAt[b] ?? 0) - (gdpAt[a] ?? 0))
+    .slice(0, topK)
+}
+
+export const REGION_COLORS = {
+  'East Asia and Pacific':       '#00d4ff',
+  'Europe and Central Asia':     '#ffd43b',
+  'Latin America and Caribbean': '#ff6b6b',
+  'Middle East':                 '#ff922b',
+  'North America':               '#51cf66',
+  'South Asia':                  '#cc5de8',
+}
+
 export function getCountryColor(countryCode, allCountries, colorBy, colorIndex) {
   if (colorBy === 'country') {
     return COUNTRY_COLORS[colorIndex % COUNTRY_COLORS.length]
@@ -85,9 +115,7 @@ export function getCountryColor(countryCode, allCountries, colorBy, colorIndex) 
     return MAP[meta.continent] ?? '#aaa'
   }
   if (colorBy === 'region') {
-    const regions = [...new Set(allCountries.map(c => c.region).filter(Boolean))]
-    const idx = regions.indexOf(meta.region)
-    return COUNTRY_COLORS[(idx >= 0 ? idx : colorIndex) % COUNTRY_COLORS.length]
+    return REGION_COLORS[meta.region] ?? '#aaa'
   }
   return COUNTRY_COLORS[colorIndex % COUNTRY_COLORS.length]
 }

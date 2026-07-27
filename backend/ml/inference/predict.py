@@ -73,11 +73,10 @@ def run_predictions(
         baseline_row  = df_clean[df_clean["country"] == country].iloc[-1]
         baseline_gdp  = float(baseline_row["gdp_per_capita"])
         baseline_year = int(baseline_row["date"])
-        horizon_years = forecast_end - baseline_year
 
         blended = np.array([
-            blend_model_with_baseline(p, baseline_gdp, cohort, horizon_years)
-            for p in raw_preds
+            blend_model_with_baseline(p, baseline_gdp, cohort, year - baseline_year)
+            for year, p in zip(future_years, raw_preds)
         ])
 
         country_future["predicted_gdp_per_capita"] = blended
@@ -101,7 +100,7 @@ def compute_confidence_intervals(
     train_end_year: int,
 ) -> pd.DataFrame:
     """
-    Country-specific 80% CI using the empirical error distribution
+    Country-specific 90% CI using the empirical error distribution
     from the last N years of historical predictions.
 
     hist_preds must have columns: country, year, prediction_error
@@ -119,16 +118,15 @@ def compute_confidence_intervals(
             logger.warning("Not enough error samples for %s — skipping CI.", country)
             continue
 
-        p10 = float(np.percentile(errors, 10))
-        p90 = float(np.percentile(errors, 90))
+        p90_abs = float(np.percentile(np.abs(errors), 90))
 
         for _, row in predictions_df[predictions_df["country"] == country].iterrows():
             pred = float(row["predicted_gdp_per_capita"])
             ci_rows.append({
-                "country":    country,
-                "year":       int(row["date"]),
-                "ci_80_lower": pred + p10,
-                "ci_80_upper": pred + p90,
+                "country":     country,
+                "year":        int(row["date"]),
+                "ci_80_lower": pred - p90_abs,
+                "ci_80_upper": pred + p90_abs,
             })
 
     return pd.DataFrame(ci_rows)

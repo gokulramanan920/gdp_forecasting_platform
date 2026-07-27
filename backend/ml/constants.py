@@ -73,12 +73,6 @@ ENSEMBLE_XGB_WEIGHT = 0.5
 DAMP_DEVELOPED = 0.96
 DAMP_EMERGING  = 0.93
 
-# Country-level overrides
-DAMP_OVERRIDES = {
-    "China": 0.75,
-    "India": 0.75,
-}
-
 # ── Mean-reversion & blending ─────────────────────────────────────────────────
 
 CLUSTER_BOUNDS = {
@@ -93,7 +87,7 @@ REVERSION_SPEED = {
 
 MODEL_SIGNAL_ALPHA = {
     "developed": 0.30,
-    "emerging":  0.55,
+    "emerging":  0.30,
 }
 
 # Updated by calibrate_cluster_baselines() after each retrain

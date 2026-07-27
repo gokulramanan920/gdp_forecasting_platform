@@ -14,7 +14,6 @@ from ml.constants import (
     CLUSTER_BOUNDS,
     DAMP_DEVELOPED,
     DAMP_EMERGING,
-    DAMP_OVERRIDES,
     FEATURE_BOUNDS,
     FEATURE_DEFAULT_CONFIG,
     FEATURE_EXTRAPOLATION_CONFIG,
@@ -50,11 +49,11 @@ def extrapolate_features_mean_reverting(
 
     # Cluster + dampening setup
     if country_name in developed_countries:
-        base_dampening = DAMP_OVERRIDES.get(country_name, DAMP_DEVELOPED)
+        base_dampening = DAMP_DEVELOPED
         cohort         = "developed"
         is_developed   = True
     else:
-        base_dampening = DAMP_OVERRIDES.get(country_name, DAMP_EMERGING)
+        base_dampening = DAMP_EMERGING
         cohort         = "emerging"
         is_developed   = False
 
