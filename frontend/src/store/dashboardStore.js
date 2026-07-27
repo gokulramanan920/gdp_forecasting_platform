@@ -10,8 +10,7 @@ export const useDashboardStore = create((set, get) => ({
 
   // ── Time & Scale ─────────────────────────────────────────────────────────
   yearStart: 1991,
-  yearEnd: 2028,
-  logScale: false,
+  yearEnd: 2029,
   normalize1991: false,
 
   // ── Chart Visual ─────────────────────────────────────────────────────────
@@ -20,7 +19,6 @@ export const useDashboardStore = create((set, get) => ({
   showLowess: false,
   showRecession: false,
   colorBy: 'country',
-  plotlyTheme: 'plotly_dark',
 
   // ── Growth sub-panel ─────────────────────────────────────────────────────
   showGrowthPanel: false,
@@ -32,23 +30,54 @@ export const useDashboardStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  // ── Agent panel ───────────────────────────────────────────────────────────
-  agentOpen: false,
+  // ── Lasso selection ──────────────────────────────────────────────────────
+  selectedPoints: [],
 
   // ── Actions ──────────────────────────────────────────────────────────────
   setFilter: (key, value) => set({ [key]: value }),
 
+  // Updates a geography filter AND removes any selected countries that no longer match
+  setGeoFilter: (key, value) => {
+    const state = get()
+    const next = {
+      continentFilter: key === 'continentFilter' ? value : state.continentFilter,
+      regionFilter: key === 'regionFilter' ? value : state.regionFilter,
+      economyTypeFilter: key === 'economyTypeFilter' ? value : state.economyTypeFilter,
+    }
+    const validCodes = new Set(
+      state.allCountries
+        .filter(c => {
+          if (next.continentFilter !== 'All' && c.continent !== next.continentFilter) return false
+          if (next.regionFilter !== 'All' && c.region !== next.regionFilter) return false
+          if (next.economyTypeFilter !== 'All' && c.economy_type !== next.economyTypeFilter) return false
+          return true
+        })
+        .map(c => c.country_code)
+    )
+    const nextCodes = state.selectedCodes.filter(code => validCodes.has(code))
+    const nextSelectedPoints = state.selectedPoints.filter(p => validCodes.has(p.country_code))
+    set({ [key]: value, selectedCodes: nextCodes, selectedPoints: nextSelectedPoints })
+    get().loadData(nextCodes)
+  },
+
   toggleCountry: (code) => {
-    const { selectedCodes } = get()
-    const next = selectedCodes.includes(code)
+    const { selectedCodes, selectedPoints } = get()
+    const removing = selectedCodes.includes(code)
+    const next = removing
       ? selectedCodes.filter(c => c !== code)
       : [...selectedCodes, code]
-    set({ selectedCodes: next })
+    const nextSelectedPoints = removing
+      ? selectedPoints.filter(p => p.country_code !== code)
+      : selectedPoints
+    set({ selectedCodes: next, selectedPoints: nextSelectedPoints })
     get().loadData(next)
   },
 
   setSelectedCodes: (codes) => {
-    set({ selectedCodes: codes })
+    const { selectedPoints } = get()
+    const codeSet = new Set(codes)
+    const nextSelectedPoints = selectedPoints.filter(p => codeSet.has(p.country_code))
+    set({ selectedCodes: codes, selectedPoints: nextSelectedPoints })
     get().loadData(codes)
   },
 

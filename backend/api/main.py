@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes.countries import router as countries_router
 from api.routes.predictions import router as predictions_router
+from api.routes.indicators import router as indicators_router
 
 app = FastAPI(
     title="GDP Forecasting Platform API",
@@ -36,6 +37,7 @@ app.add_middleware(
 
 app.include_router(countries_router)
 app.include_router(predictions_router)
+app.include_router(indicators_router)
 
 
 @app.get("/api/health")

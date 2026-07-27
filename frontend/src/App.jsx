@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
-import NewsPage from './pages/NewsPage'
 import ModelPage from './pages/ModelPage'
 import AboutPage from './pages/AboutPage'
 
@@ -15,16 +14,15 @@ function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0d1117]/90 backdrop-blur-sm">
-      <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="px-8 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-[#00d4ff] font-bold tracking-wide text-sm font-mono">
             GDP<span className="text-white/40">·</span>FORECAST
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-6">
           <NavLink to="/" end className={linkClass}>Home</NavLink>
           <NavLink to="/dashboard" className={linkClass}>Dashboard</NavLink>
-          <NavLink to="/news" className={linkClass}>News</NavLink>
           <NavLink to="/model" className={linkClass}>Model</NavLink>
           <NavLink to="/about" className={linkClass}>About</NavLink>
         </div>
@@ -42,7 +40,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/news" element={<NewsPage />} />
             <Route path="/model" element={<ModelPage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>

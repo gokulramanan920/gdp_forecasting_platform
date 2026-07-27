@@ -52,6 +52,21 @@ export function computeCAGR(historical, countryCode, nYears) {
   return (Math.pow(endVal / startVal, 1 / nYears) - 1) * 100
 }
 
+/** Color a YoY segment: green shades for growth, red shades for decline. */
+export function yoySegmentColor(pctChange) {
+  if (pctChange > 0) {
+    const t = Math.min(pctChange / 0.08, 1) // saturates at 8% growth
+    const sat = Math.round(40 + 60 * t)
+    const lig = Math.round(60 - 30 * t)
+    return `hsl(130,${sat}%,${lig}%)`
+  } else {
+    const t = Math.min(Math.abs(pctChange) / 0.05, 1) // saturates at 5% decline
+    const sat = Math.round(50 + 50 * t)
+    const lig = Math.round(65 - 35 * t)
+    return `hsl(0,${sat}%,${lig}%)`
+  }
+}
+
 export function getCountryColor(countryCode, allCountries, colorBy, colorIndex) {
   if (colorBy === 'country') {
     return COUNTRY_COLORS[colorIndex % COUNTRY_COLORS.length]

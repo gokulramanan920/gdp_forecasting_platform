@@ -3,7 +3,7 @@ import { useDashboardStore } from '../store/dashboardStore'
 import FilterSidebar from '../components/dashboard/FilterSidebar'
 import GDPChart from '../components/dashboard/GDPChart'
 import GrowthSubPanel from '../components/dashboard/GrowthSubPanel'
-import AgentPanel from '../components/dashboard/AgentPanel'
+import SelectedPointsTable from '../components/dashboard/SelectedPointsTable'
 
 export default function DashboardPage() {
   const { loadCountries, showGrowthPanel, error } = useDashboardStore()
@@ -26,9 +26,9 @@ export default function DashboardPage() {
         <GDPChart />
 
         {showGrowthPanel && <GrowthSubPanel />}
-      </main>
 
-      <AgentPanel />
+        <SelectedPointsTable />
+      </main>
     </div>
   )
 }

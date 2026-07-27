@@ -151,8 +151,8 @@ FEATURE_BOUNDS = {
 CI_LOOKBACK_YEARS = 10
 CI_MIN_SAMPLES    = 5      # minimum error samples required
 
-COUNTRY_BATCH_SIZE   = 5
-INDICATOR_BATCH_SIZE = 5
+COUNTRY_BATCH_SIZE   = 2
+INDICATOR_BATCH_SIZE = 2
 
 # wbdata returns full country names in the DataFrame — map back to 2-letter
 # codes that match the country_code primary key in the countries table

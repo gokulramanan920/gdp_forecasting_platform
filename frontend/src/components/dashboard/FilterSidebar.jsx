@@ -45,11 +45,11 @@ export default function FilterSidebar() {
     allCountries, selectedCodes,
     continentFilter, regionFilter, economyTypeFilter,
     yearStart, yearEnd,
-    logScale, normalize1991,
+    normalize1991,
     showCI, showProjections, showLowess, showRecession,
-    colorBy, plotlyTheme,
+    colorBy,
     showGrowthPanel, cagrPeriod,
-    toggleCountry, setFilter,
+    toggleCountry, setFilter, setGeoFilter,
   } = useDashboardStore()
 
   const [countrySearch, setCountrySearch] = useState('')
@@ -122,11 +122,11 @@ export default function FilterSidebar() {
         {/* ── Geography ──────────────────────────────────────────────── */}
         <SectionLabel>Geography</SectionLabel>
         <div className="space-y-1.5">
-          <Select value={continentFilter} onChange={v => setFilter('continentFilter', v)} options={continents} label="Continent" />
-          <Select value={regionFilter} onChange={v => setFilter('regionFilter', v)} options={regions} label="Region" />
+          <Select value={continentFilter} onChange={v => setGeoFilter('continentFilter', v)} options={continents} label="Continent" />
+          <Select value={regionFilter} onChange={v => setGeoFilter('regionFilter', v)} options={regions} label="Region" />
           <Select
             value={economyTypeFilter}
-            onChange={v => setFilter('economyTypeFilter', v)}
+            onChange={v => setGeoFilter('economyTypeFilter', v)}
             options={['All', 'developed', 'emerging']}
             label="Economy Type"
           />
@@ -150,7 +150,7 @@ export default function FilterSidebar() {
               <span>To</span><span className="text-gray-300 font-mono">{yearEnd}</span>
             </div>
             <input
-              type="range" min={yearStart + 1} max={2028} value={yearEnd}
+              type="range" min={yearStart + 1} max={2029} value={yearEnd}
               onChange={e => setFilter('yearEnd', +e.target.value)}
               className="w-full h-1 accent-[#00d4ff]"
             />
@@ -163,8 +163,7 @@ export default function FilterSidebar() {
           <Toggle label="80% CI Band" value={showCI} onChange={v => setFilter('showCI', v)} />
           <Toggle label="Show Projections" value={showProjections} onChange={v => setFilter('showProjections', v)} />
           <Toggle label="LOWESS Trend" value={showLowess} onChange={v => setFilter('showLowess', v)} />
-          <Toggle label="Recession Highlight" value={showRecession} onChange={v => setFilter('showRecession', v)} />
-          <Toggle label="Log Scale" value={logScale} onChange={v => setFilter('logScale', v)} />
+          <Toggle label="YoY Growth Colors" value={showRecession} onChange={v => setFilter('showRecession', v)} />
           <Toggle label="Index (first yr = 100)" value={normalize1991} onChange={v => setFilter('normalize1991', v)} />
         </div>
 
@@ -182,17 +181,6 @@ export default function FilterSidebar() {
               { value: 'region', label: 'Region' },
             ]}
           />
-          <Select
-            value={plotlyTheme}
-            onChange={v => setFilter('plotlyTheme', v)}
-            label="Chart Theme"
-            options={[
-              { value: 'plotly_dark', label: 'Dark' },
-              { value: 'plotly', label: 'Default' },
-              { value: 'ggplot2', label: 'GGPlot2' },
-              { value: 'seaborn', label: 'Seaborn' },
-            ]}
-          />
         </div>
 
         {/* ── Growth Analysis ───────────────────────────────────────── */}
@@ -201,7 +189,13 @@ export default function FilterSidebar() {
           <Toggle label="Show Growth Bar Chart" value={showGrowthPanel} onChange={v => setFilter('showGrowthPanel', v)} />
           {showGrowthPanel && (
             <div>
-              <p className="text-[10px] text-gray-500 mb-1">CAGR Period</p>
+              <div className="flex items-center gap-1">
+                <p className="text-[10px] text-gray-500 mb-1">CAGR Period</p>
+                <span
+                  title="Computed from historical data only (most recent years) — ML projected years are excluded"
+                  className="text-[10px] text-gray-600 cursor-help mb-1 select-none"
+                >ⓘ</span>
+              </div>
               <div className="flex gap-1">
                 {['3yr', '5yr', '10yr'].map(p => (
                   <button
