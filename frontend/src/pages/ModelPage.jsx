@@ -26,7 +26,7 @@ export default function ModelPage() {
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-bold text-white mb-4">Model & Methodology</h1>
         <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-          An ensemble of CatBoost and XGBoost trained on 34 years of World Bank data across
+          An ensemble of CatBoost and XGBoost trained on 35 years of World Bank data across
           20 countries, with cluster-aware forecasting and mean-reverting feature extrapolation.
         </p>
       </div>
@@ -38,8 +38,8 @@ export default function ModelPage() {
           <div className="space-y-3 text-sm">
             {[
               ['Model type', 'EnsembleCBXGB: CatBoost 50% + XGBoost 50%'],
-              ['Training window', '1991 – 2021 (expanding CV folds)'],
-              ['Holdout', '2022 – 2024 (3-year out-of-sample)'],
+              ['Training window', '1991 – 2022 (expanding CV folds)'],
+              ['Holdout', '2023 – 2025 (3-year out-of-sample)'],
               ['Clustering', 'K-Means (k=2): developed / emerging cohorts'],
               ['Confidence intervals', '80% CI from 10-year empirical error distribution'],
               ['Retraining trigger', 'New World Bank GDP data (annual)'],
@@ -76,7 +76,7 @@ export default function ModelPage() {
       {/* Performance metrics */}
       <div className="border border-[#00d4ff]/25 rounded-xl p-6 bg-[#00d4ff]/[0.03] mb-8">
         <h2 className="text-white font-semibold text-lg mb-5">
-          Model Performance: Holdout Evaluation (2022–2024)
+          Model Performance: Holdout Evaluation (2023–2025)
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="text-center">
@@ -92,7 +92,7 @@ export default function ModelPage() {
           <div className="text-center">
             <div className="text-3xl font-bold text-[#00d4ff] font-mono mb-1">3 yr</div>
             <div className="text-sm font-medium text-gray-300">Out-of-Sample Holdout</div>
-            <div className="text-xs text-gray-500 mt-0.5">Model never saw 2022–2024 during training</div>
+            <div className="text-xs text-gray-500 mt-0.5">Model never saw 2023–2025 during training</div>
           </div>
         </div>
       </div>

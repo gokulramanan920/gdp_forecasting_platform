@@ -68,7 +68,7 @@ export default function HomePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
         <StatCard label="Countries Tracked" value={stats.countries} sub="G20 + major economies" />
         <StatCard label="Economic Indicators" value="19" sub="World Bank API" />
-        <StatCard label="Years of History" value="34" sub="1991 – 2024" />
+        <StatCard label="Years of History" value="35" sub="1991 – 2025" />
         <StatCard label="Projection Horizon" value="4 yrs" sub="2026 – 2029" />
       </div>
 

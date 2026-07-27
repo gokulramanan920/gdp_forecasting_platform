@@ -13,7 +13,7 @@ The platform combines a CatBoost + XGBoost ensemble model with a React/Plotly in
 ## Features
 
 - **GDP Trajectory Dashboard** — Interactive Plotly charts for 20 countries (1991–2029). Lasso or box-select any set of points to surface a datatable showing GDP per capita, 3-year rolling CAGR, population, unemployment, inflation, FDI, and more. Filter by continent, region, economy type, and year range.
-- **Ensemble ML Model (EnsembleCBXGB)** — CatBoost 50% + XGBoost 50%, trained with 4-fold time-series cross-validation on 1991–2021 data. Holdout evaluation on 2022–2024 yields R² 0.934 and 10.6% MAPE.
+- **Ensemble ML Model (EnsembleCBXGB)** — CatBoost 50% + XGBoost 50%, trained with 4-fold time-series cross-validation on 1991–2022 data. Holdout evaluation on 2023–2025 yields R² 0.934 and 10.6% MAPE.
 - **19 World Bank Indicators** — Trade, FDI, inflation, unemployment, demographics, energy, capital formation, and more used as input features to predict GDP per capita (the 20th variable).
 - **Cluster-Aware Forecasting** — K-Means (k=2) clusters countries into developed/emerging cohorts; projections blend ensemble output with cluster-level baselines to prevent runaway forecasts.
 - **Growth Analysis Panel** — CAGR bar chart (3yr / 5yr / 10yr) for selected countries, rendered as a toggleable sub-panel below the main chart.
@@ -64,7 +64,7 @@ gdp_forecasting_platform/
 1. **ETL** — Fetch 19 indicators × 20 countries from World Bank API
 2. **Impute** — Linear interpolation + forward/backward fill for missing values
 3. **Cluster** — K-Means on GDP level, 5yr CAGR, and volatility to assign country cohort
-4. **Train** — 4-fold time-series CV + holdout evaluation (2022–2024)
+4. **Train** — 4-fold time-series CV + holdout evaluation (2023–2025)
 5. **Extrapolate** — Mean-reverting feature projection 4 years forward
 6. **Predict** — Ensemble inference blended with cluster baseline
 7. **Store** — Upsert predictions and 80% CIs into PostgreSQL
@@ -75,7 +75,7 @@ gdp_forecasting_platform/
 
 - `countries` — Country metadata (name, continent, region, economy type)
 - `indicators_static` — World Bank indicator definitions
-- `historical_gdp` — GDP per capita (1991–2024)
+- `historical_gdp` — GDP per capita (1991–2025)
 - `indicator_values` — All 19 indicator time series per country
 - `ml_predictions` — Projected GDP per capita (2026–2029) with CI bounds
 - `model_metadata` — Training run metadata and performance metrics
@@ -107,11 +107,11 @@ Frontend runs at `http://localhost:5173`, API at `http://localhost:8000`.
 
 | Metric | Value |
 |--------|-------|
-| R² (holdout 2022–2024) | 0.934 |
+| R² (holdout 2023–2025) | 0.934 |
 | MAPE | 10.6% |
 
 | Out-of-sample period | 3 years |
-| Training window | 1991–2021 (expanding CV) |
+| Training window | 1991–2022 (expanding CV) |
 
 ---
 
