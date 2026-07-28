@@ -1,6 +1,6 @@
 # GDP Forecasting Platform
 
-A full-stack platform that forecasts GDP per capita trajectories for 20 countries through 2029 using an ensemble ML model trained on 34 years of World Bank data.
+A full-stack platform that forecasts GDP per capita trajectories for 20 countries through 2029 using an ensemble ML model trained on 35 years of World Bank data.
 
 ---
 
