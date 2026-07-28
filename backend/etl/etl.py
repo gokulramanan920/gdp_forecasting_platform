@@ -190,6 +190,7 @@ def promote_to_indicator_data(
     Upsert cleaned rows into indicator_data.
     Sets is_extrapolated=True for any value that was imputed (not from raw API).
     """
+    session.close()  # release connection held idle during World Bank fetch; pool_pre_ping gets a fresh one
     raw_present    = _build_raw_present_set(raw_df)
     indicator_map  = _get_indicator_id_map(session)
     numeric_cols   = [c for c in df_clean.columns if c not in ("country", "date", "country-year")]
