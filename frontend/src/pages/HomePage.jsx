@@ -99,7 +99,7 @@ export default function HomePage() {
       <div className="border border-yellow-500/20 bg-yellow-500/5 rounded-xl p-6 text-center max-w-[48rem] mx-auto">
         <p className="text-yellow-300/80 text-sm">
           <span className="font-semibold">Note on data lag:</span>{' '}
-          World Bank GDP data lags ~1.5 years. Projections account for this using
+          World Bank GDP data lags about an year. Projections account for this using
           mean-reverting extrapolation of 19 World Bank indicators.
         </p>
       </div>
