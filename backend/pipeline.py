@@ -5,7 +5,7 @@ Gokul Ramanan
 Pipeline Entry Point
 Orchestrates the full ETL → Train → Predict run.
 Designed to be deployment-agnostic — wire to any scheduler:
-  - crontab:          0 0 1 * * python pipeline.py
+  - crontab:          0 6 1 * * python pipeline.py
   - Railway/Render:   cron job pointing at this file
   - AWS EventBridge:  Lambda handler calls run_pipeline()
 """
