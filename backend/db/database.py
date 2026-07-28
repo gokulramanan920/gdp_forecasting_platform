@@ -10,7 +10,16 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-_ssl_args = {} if "localhost" in (DATABASE_URL or "") else {"sslmode": "require"}
+_ssl_args = (
+    {} if "localhost" in (DATABASE_URL or "")
+    else {
+        "sslmode": "require",
+        "keepalives": 1,
+        "keepalives_idle": 60,      # send first keepalive after 60s idle
+        "keepalives_interval": 10,  # retry every 10s
+        "keepalives_count": 5,      # drop after 5 failed retries
+    }
+)
 
 engine = create_engine(
     DATABASE_URL,
