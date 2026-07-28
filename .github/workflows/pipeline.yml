@@ -1,0 +1,29 @@
+name: GDP Pipeline
+
+on:
+  schedule:
+    - cron: '0 6 1 */3 *'   # 1st of Jan/Apr/Jul/Oct at 06:00 UTC
+  workflow_dispatch:          # manual "Run workflow" button in GitHub UI
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        run: python backend/pipeline.py
