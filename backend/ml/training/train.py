@@ -287,7 +287,7 @@ def persist_model_version(
     # Sync sequence in case rows were inserted via migration with explicit IDs
     session.execute(text(
         "SELECT setval('model_versions_version_id_seq', "
-        "(SELECT COALESCE(MAX(version_id), 0) FROM model_versions))"
+        "(SELECT COALESCE(MAX(version_id), 0) + 1 FROM model_versions), false)"
     ))
 
     existing = session.query(ModelVersion).filter_by(version_name=version_name).first()
