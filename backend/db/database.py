@@ -10,10 +10,13 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+_ssl_args = {} if "localhost" in (DATABASE_URL or "") else {"sslmode": "require"}
+
 engine = create_engine(
     DATABASE_URL,
-    echo=False,  # Shows SQL queries in console (helpful for debugging)
-    pool_pre_ping=True  # Verifies connections before using
+    echo=False,
+    pool_pre_ping=True,
+    connect_args=_ssl_args,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
