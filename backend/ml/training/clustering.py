@@ -99,7 +99,8 @@ def assign_cohorts_kmeans(
         developed_countries = [c for c in developed_countries if c not in misclassified]
         emerging_countries  = emerging_countries + misclassified
 
-    _log_cluster_results(cluster_df, developed_id, emerging_id)
+    logger.info("DEVELOPED (%d countries): %s", len(developed_countries), sorted(developed_countries))
+    logger.info("EMERGING  (%d countries): %s", len(emerging_countries),  sorted(emerging_countries))
 
     return developed_countries, emerging_countries, {
         "base_year":           base_year,
@@ -109,15 +110,6 @@ def assign_cohorts_kmeans(
         "developed_cluster_id": developed_id,
         "emerging_cluster_id":  emerging_id,
     }
-
-
-def _log_cluster_results(cluster_df: pd.DataFrame, developed_id: int, emerging_id: int) -> None:
-    for label, cid in [("DEVELOPED", developed_id), ("EMERGING", emerging_id)]:
-        subset = cluster_df[cluster_df["cluster"] == cid].sort_values("gdp_level", ascending=False)
-        logger.info(
-            "%s (%d countries): %s",
-            label, len(subset), subset["country"].tolist(),
-        )
 
 
 # ── Baseline growth rate calibration ─────────────────────────────────────────

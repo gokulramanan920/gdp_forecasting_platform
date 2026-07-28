@@ -17,6 +17,7 @@ import pandas as pd
 from catboost import CatBoostRegressor
 from sklearn.base import BaseEstimator, RegressorMixin, clone
 from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, r2_score
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from xgboost import XGBRegressor
 
@@ -283,6 +284,12 @@ def persist_model_version(
     train_end_year: int,
     session: Session,
 ) -> ModelVersion:
+    # Sync sequence in case rows were inserted via migration with explicit IDs
+    session.execute(text(
+        "SELECT setval('model_versions_version_id_seq', "
+        "(SELECT COALESCE(MAX(version_id), 0) FROM model_versions))"
+    ))
+
     existing = session.query(ModelVersion).filter_by(version_name=version_name).first()
     if existing:
         session.delete(existing)

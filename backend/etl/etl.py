@@ -261,5 +261,5 @@ def run_etl(session: Session) -> pd.DataFrame:
 
 
 def _get_current_year() -> int:
-    from datetime import datetime
-    return datetime.utcnow().year
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).year
