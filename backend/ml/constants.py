@@ -80,6 +80,14 @@ CLUSTER_BOUNDS = {
     "emerging":  {"min_3yr": -0.08, "max_3yr": 0.70},
 }
 
+# Per-year growth bounds applied sequentially after blending
+# Each forecast year is clipped relative to the prior year's prediction,
+# not the baseline — prevents runaway spikes in later forecast years.
+YOY_GROWTH_BOUNDS = {
+    "developed": {"min": -0.05, "max": 0.08},
+    "emerging":  {"min": -0.06, "max": 0.12},
+}
+
 REVERSION_SPEED = {
     "developed": 0.45,
     "emerging":  0.20,

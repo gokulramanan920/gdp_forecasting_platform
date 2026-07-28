@@ -18,6 +18,7 @@ from ml.constants import (
     CI_LOOKBACK_YEARS,
     CI_MIN_SAMPLES,
     FEATURE_COLS_WITH_COUNTRY,
+    YOY_GROWTH_BOUNDS,
 )
 from ml.inference.extrapolate import (
     blend_model_with_baseline,
@@ -78,6 +79,17 @@ def run_predictions(
             blend_model_with_baseline(p, baseline_gdp, cohort, year - baseline_year)
             for year, p in zip(future_years, raw_preds)
         ])
+
+        # Sequential YoY cap — clip each year relative to prior year, not baseline,
+        # to prevent runaway spikes in later forecast years (e.g. year-4 jump).
+        yoy  = YOY_GROWTH_BOUNDS[cohort]
+        prev = baseline_gdp
+        capped = []
+        for pred in blended:
+            pred = float(np.clip(pred, prev * (1 + yoy["min"]), prev * (1 + yoy["max"])))
+            capped.append(pred)
+            prev = pred
+        blended = np.array(capped)
 
         country_future["predicted_gdp_per_capita"] = blended
         country_future["raw_model_pred"]            = raw_preds
