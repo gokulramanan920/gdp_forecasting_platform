@@ -17,7 +17,7 @@ The platform combines a CatBoost + XGBoost ensemble model with a React/Plotly in
 - **19 World Bank Indicators** — Trade, FDI, inflation, unemployment, demographics, energy, capital formation, and more used as input features to predict GDP per capita (the 20th variable).
 - **Cluster-Aware Forecasting** — K-Means (k=2) clusters countries into developed/emerging cohorts; projections blend ensemble output with cluster-level baselines to prevent runaway forecasts.
 - **Growth Analysis Panel** — CAGR bar chart (3yr / 5yr / 10yr) for selected countries, rendered as a toggleable sub-panel below the main chart.
-- **APScheduler Retraining** — Cron-triggered ETL pipeline pulls fresh World Bank data, retrains the model, and upserts predictions into the database annually.
+- **Automated Pipeline** — GitHub Actions cron job runs on the 1st of every month: fetches fresh World Bank data, retrains the ensemble, and upserts new predictions into the database. Manual dispatch available via the Actions tab.
 
 ---
 
@@ -29,7 +29,7 @@ The platform combines a CatBoost + XGBoost ensemble model with a React/Plotly in
 | Backend | Python 3.11, FastAPI, Uvicorn |
 | Database | PostgreSQL + TimescaleDB + pgvector |
 | ML | CatBoost, XGBoost, scikit-learn, pandas, numpy |
-| Scheduling | APScheduler |
+| CI/CD | GitHub Actions |
 | Data Source | World Bank Open Data API |
 
 ---
@@ -112,6 +112,34 @@ Frontend runs at `http://localhost:5173`, API at `http://localhost:8000`.
 
 | Out-of-sample period | 3 years |
 | Training window | 1991–2022 (expanding CV) |
+
+---
+
+## Deployment
+
+**Live:** [gdp-forecasting-platform.vercel.app](https://gdp-forecasting-platform.vercel.app)
+
+| Service | Provider | Role |
+|---------|----------|------|
+| Frontend | Vercel | Serves the React app; auto-deploys on push to `main` |
+| Backend API | Render | Hosts the FastAPI server (Python 3.11 Web Service) |
+| Database | Neon | Serverless PostgreSQL 17 with pgvector extension |
+
+**Routing:** Vercel rewrites `/api/*` requests to the Render backend, so the frontend and API share a single origin and no CORS configuration is needed on the client.
+
+**CI/CD Pipeline (GitHub Actions)**
+
+The pipeline runs the full ETL → cluster → train → predict → persist cycle automatically on the 1st of every month at 06:00 UTC. A manual "Run workflow" button is available in the Actions tab for on-demand runs.
+
+```
+ETL (World Bank API fetch + imputation + DB upsert)
+  → K-Means cohort clustering
+  → EnsembleCBXGB retrain (4-fold CV + holdout eval)
+  → Model version persisted to model_versions table
+  → Predictions + 90% CIs upserted to model_predictions table
+```
+
+The pipeline uses `requirements.txt` (full ML stack) rather than the slim `requirements-api.txt` used by Render.
 
 ---
 
