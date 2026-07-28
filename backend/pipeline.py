@@ -56,7 +56,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def run_pipeline(version_name: str | None = None) -> None:
+def run_pipeline(version_name: str | None = None, skip_etl: bool = False) -> None:
     if version_name is None:
         version_name = f"v_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
 
@@ -68,8 +68,12 @@ def run_pipeline(version_name: str | None = None) -> None:
 
     try:
         # ── 1. ETL ───────────────────────────────────────────────────────
-        logger.info("[1/6] Running ETL (ingest + clean + promote)…")
-        df_clean = run_etl(session)
+        if skip_etl:
+            logger.info("[1/6] Skipping ETL — loading indicator data from DB…")
+            df_clean = _load_df_from_db(session)
+        else:
+            logger.info("[1/6] Running ETL (ingest + clean + promote)…")
+            df_clean = run_etl(session)
 
         # Resolve dynamic year bounds from the data
         train_end_year    = int(df_clean[df_clean[TARGET_COL].notna()]["date"].max())
@@ -242,5 +246,7 @@ def run_inference_only(version_name: str | None = None) -> None:
 if __name__ == "__main__":
     if "--inference-only" in sys.argv:
         run_inference_only()
+    elif "--skip-etl" in sys.argv:
+        run_pipeline(skip_etl=True)
     else:
         run_pipeline()
