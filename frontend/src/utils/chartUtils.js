@@ -52,6 +52,22 @@ export function computeCAGR(historical, countryCode, nYears) {
   return (Math.pow(endVal / startVal, 1 / nYears) - 1) * 100
 }
 
+/** CAGR between yearStart and yearEnd, using historical + non-baseline predictions. */
+export function computeCAGRRange(historical, predictions, countryCode, yearStart, yearEnd) {
+  const lookup = {}
+  for (const d of historical) {
+    if (d.country_code === countryCode) lookup[d.year] = d.value
+  }
+  for (const d of predictions) {
+    if (d.country_code === countryCode && !d.is_baseline) lookup[d.year] = d.value
+  }
+  const startVal = lookup[yearStart]
+  const endVal   = lookup[yearEnd]
+  const nYears   = yearEnd - yearStart
+  if (!startVal || !endVal || startVal <= 0 || endVal <= 0 || nYears <= 0) return null
+  return (Math.pow(endVal / startVal, 1 / nYears) - 1) * 100
+}
+
 /** Color a YoY segment: green shades for growth, red shades for decline. */
 export function yoySegmentColor(pctChange) {
   if (pctChange > 0) {

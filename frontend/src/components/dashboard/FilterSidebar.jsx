@@ -216,12 +216,12 @@ export default function FilterSidebar() {
               <div className="flex items-center gap-1">
                 <p className="text-[10px] text-gray-500 mb-1">CAGR Period</p>
                 <span
-                  title="Computed from historical data only (most recent years) — ML projected years are excluded"
+                  title={`Range: full span of the time filter (may include ML projections).\n3yr/5yr/10yr: most recent N years of historical data only (ML projected years excluded).`}
                   className="text-[10px] text-gray-600 cursor-help mb-1 select-none"
                 >ⓘ</span>
               </div>
               <div className="flex gap-1">
-                {['3yr', '5yr', '10yr'].map(p => (
+                {['range', '3yr', '5yr', '10yr'].map(p => (
                   <button
                     key={p}
                     onClick={() => setFilter('cagrPeriod', p)}
@@ -231,7 +231,7 @@ export default function FilterSidebar() {
                         : 'bg-white/[0.03] text-gray-500 border border-white/10 hover:border-white/20'
                     }`}
                   >
-                    {p}
+                    {p === 'range' ? 'Rng' : p}
                   </button>
                 ))}
               </div>

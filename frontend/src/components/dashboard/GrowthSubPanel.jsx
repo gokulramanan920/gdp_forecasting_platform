@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import Plot from '../../utils/PlotlyChart'
 import { useDashboardStore } from '../../store/dashboardStore'
-import { computeCAGR, getCountryColor, computeTopKCodes } from '../../utils/chartUtils'
+import { computeCAGR, computeCAGRRange, getCountryColor, computeTopKCodes } from '../../utils/chartUtils'
 
 export default function GrowthSubPanel() {
-  const { historical, predictions, selectedCodes, allCountries, cagrPeriod, colorBy, topK, yearEnd } = useDashboardStore()
+  const { historical, predictions, selectedCodes, allCountries, cagrPeriod, colorBy, topK, yearStart, yearEnd } = useDashboardStore()
 
   const activeCodes = useMemo(
     () => computeTopKCodes(selectedCodes, topK, historical, predictions, yearEnd),
@@ -12,11 +12,13 @@ export default function GrowthSubPanel() {
   )
 
   const { data, layout } = useMemo(() => {
-    const n = { '3yr': 3, '5yr': 5, '10yr': 10 }[cagrPeriod]
+    const nMap = { '3yr': 3, '5yr': 5, '10yr': 10 }
     const items = activeCodes
       .map(code => {
         const idx = activeCodes.indexOf(code)
-        const cagr = computeCAGR(historical, code, n)
+        const cagr = cagrPeriod === 'range'
+          ? computeCAGRRange(historical, predictions, code, yearStart, yearEnd)
+          : computeCAGR(historical, code, nMap[cagrPeriod])
         if (cagr === null) return null
         const meta = allCountries.find(c => c.country_code === code) ?? {}
         return { code, name: meta.country_name ?? code, cagr, idx }
@@ -43,7 +45,7 @@ export default function GrowthSubPanel() {
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
       font: { family: 'Inter, system-ui, sans-serif', color: '#e6edf3' },
-      title: { text: `${cagrPeriod} GDP per Capita CAGR (%)`, font: { size: 14, color: '#e6edf3' }, x: 0.02 },
+      title: { text: cagrPeriod === 'range' ? `GDP per Capita CAGR — ${yearStart}–${yearEnd} (%)` : `${cagrPeriod} GDP per Capita CAGR (%)`, font: { size: 14, color: '#e6edf3' }, x: 0.02 },
       xaxis: { gridcolor: 'rgba(255,255,255,0.06)', tickangle: -30 },
       yaxis: { title: 'CAGR (%)', gridcolor: 'rgba(255,255,255,0.06)', tickformat: '.2f' },
       margin: { l: 60, r: 20, t: 50, b: 70 },
@@ -51,7 +53,7 @@ export default function GrowthSubPanel() {
     }
 
     return { data: [trace], layout }
-  }, [historical, activeCodes, allCountries, cagrPeriod, colorBy])
+  }, [historical, predictions, activeCodes, allCountries, cagrPeriod, colorBy, yearStart, yearEnd])
 
   if (!data.length) {
     return (

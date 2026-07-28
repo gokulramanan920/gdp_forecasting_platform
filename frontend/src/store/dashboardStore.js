@@ -22,7 +22,7 @@ export const useDashboardStore = create((set, get) => ({
 
   // ── Growth sub-panel ─────────────────────────────────────────────────────
   showGrowthPanel: false,
-  cagrPeriod: '5yr',
+  cagrPeriod: 'range',
 
   // ── Top K filter ─────────────────────────────────────────────────────────
   topK: null,   // null = off, 2–10 = show only top K countries by GDP at yearEnd
